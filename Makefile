@@ -1,6 +1,7 @@
 COBJECTS = \
 	start.o \
 	main.o \
+	uart.o \
 
 SOBJECTS = \
 	boot.o
