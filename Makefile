@@ -1,6 +1,6 @@
 COBJECTS = \
+	start.o \
 	main.o \
-	start.o
 
 SOBJECTS = \
 	boot.o
@@ -11,23 +11,24 @@ CC = $(TOOLCHAIN)gcc
 AS = $(TOOLCHAIN)as
 CFLAGS = -Wall -ffreestanding -O0 -nostdlib -mcmodel=medany -g3
 
-all: $(COBJECTS) $(SOBJECTS)
-
-$(COBJECTS): %.o : %.c # use implicit rule
+all: $(SOBJECTS) $(COBJECTS)
 
 $(SOBJECTS): %.o : %.s
 
+$(COBJECTS): %.o : %.c # use implicit rule
+
 kernel: all
-	$(CC) -T linker.ld -o kernel $(CFLAGS) $(COBJECTS) $(SOBJECTS)
+	$(CC) -T linker.ld -o kernel $(CFLAGS) $(SOBJECTS) $(COBJECTS)
 
 clean:
 	rm -f *.o kernel
 
-QEMUOPTIONS = -bios none -kernel kernel
+QEMUOPTIONS = -machine virt -bios none -kernel kernel -m 128M -smp 1
+QEMUGRAPHIC = -monitor stdio
 QEMUGDB = -s -S # By default, TCP port 1234 is used.
 
 qemu-gdb: kernel
 	$(QEMU) $(QEMUGDB) $(QEMUOPTIONS)
 
 qemu: kernel
-	$(QEMU) $(QEMUOPTIONS)
+	$(QEMU) $(QEMUOPTIONS) $(QEMUGRAPHIC)
