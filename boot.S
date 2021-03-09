@@ -3,8 +3,7 @@
 
 _boot:
     csrr t0, mhartid # Only single hardware thread is used here.
-spin:
-    bnez t0, spin
+    bnez t0, _boot
     # Stack grows downside in RISC-V
     la sp, _stack
     li t1, 4096
