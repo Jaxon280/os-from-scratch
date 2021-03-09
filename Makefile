@@ -2,6 +2,7 @@ COBJECTS = \
 	start.o \
 	main.o \
 	uart.o \
+	string.o \
 
 SOBJECTS = \
 	boot.o
