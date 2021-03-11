@@ -1,6 +1,8 @@
-#include "int.h"
+#include "stdarg.h"
 
-#define UART0 0x10000000L // UART base address
+#include "type.h"
+#include "memlayout.h"
+
 #define BAUDRATE 0x10000
 
 // UART registers' offset from UART0. These registers are memory-mapped.
