@@ -3,6 +3,7 @@ COBJECTS = \
 	main.o \
 	uart.o \
 	string.o \
+	kvm.o \
 
 SOBJECTS = \
 	boot.o
