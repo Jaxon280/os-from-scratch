@@ -1,6 +1,3 @@
-#include "stdarg.h"
-
-#include "int.h"
 #include "uart.h"
 
 #define NUMBER_CHAR(x) ((char)(x + 48))
@@ -47,7 +44,32 @@ char uartgetc(void)
 // {
 // }
 
-void printint(int v, int base)
+static void printuint64(uint64 v, int base)
+{
+    uint64 x = v;
+    char buf[32];
+
+    int d;
+    int i = 0;
+
+    do
+    {
+        d = (x % base);
+        buf[i++] = ((d <= 9) ? NUMBER_CHAR(d) : HEX_CHAR(d));
+    } while ((x /= base) != 0);
+
+    if (base == 16)
+    {
+        uartputc('0');
+        uartputc('x');
+    }
+    while (--i >= 0)
+    {
+        uartputc(buf[i]);
+    }
+}
+
+static void printint32(int v, int base)
 {
     int x = v;
     int sign = 0;
@@ -71,15 +93,20 @@ void printint(int v, int base)
     if (sign)
         buf[i++] = '-';
 
+    if (base == 16)
+    {
+        uartputc('0');
+        uartputc('x');
+    }
     while (--i >= 0)
     {
         uartputc(buf[i]);
     }
 }
 
-void printptr(uint64 v)
+static void printptr(uint64 v)
 {
-    uint64 x = (v & 0x00000000ffffffff);
+    uint64 x = (v & 0x0000007fffffffff); // MASK for 39-bit address
     char buf[16];
 
     if (x < 0)
@@ -127,7 +154,15 @@ void printf(char *v, ...)
             switch (c)
             {
             case 'd':
-                printint(va_arg(ap, int), 10);
+                printint32(va_arg(ap, int), 10);
+                break;
+
+            case 'x':
+                printint32(va_arg(ap, int), 16);
+                break;
+
+            case 'l':
+                printuint64(va_arg(ap, uint64), 16);
                 break;
 
             case 'c':
